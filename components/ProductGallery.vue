@@ -67,12 +67,14 @@ type ShowcaseImage = {
 }
 
 const { locale, t } = useLocale()
+const config = useRuntimeConfig()
+const assetUrl = (path: string) => `${config.app.baseURL}${path}`
 
 // 后续只需替换这里的分类名称和图片路径即可。
 const showcaseImages: ShowcaseImage[] = [
-  { label: 'immersiveReading', alt: 'immersiveReadingAlt', src: '/showcase/marknest-reading.webp' },
-  { label: 'freeEditing', alt: 'freeEditingAlt', src: '/showcase/marknest-editor.webp' },
-  { label: 'contentCapture', alt: 'contentCaptureAlt', src: '/showcase/marknest-capture.webp' }
+  { label: 'immersiveReading', alt: 'immersiveReadingAlt', src: assetUrl('showcase/marknest-reading.webp') },
+  { label: 'freeEditing', alt: 'freeEditingAlt', src: assetUrl('showcase/marknest-editor.webp') },
+  { label: 'contentCapture', alt: 'contentCaptureAlt', src: assetUrl('showcase/marknest-capture.webp') }
 ]
 
 const selectedImage = ref<ShowcaseImage | null>(null)

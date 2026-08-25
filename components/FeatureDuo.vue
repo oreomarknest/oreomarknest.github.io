@@ -31,20 +31,22 @@
 
 <script setup lang="ts">
 const { locale, t } = useLocale()
+const config = useRuntimeConfig()
+const assetUrl = (path: string) => `${config.app.baseURL}${path}`
 
 const features = [
   {
     title: 'realtimeTitle',
     text: 'realtimeText',
     alt: 'realtimeTitle',
-    image: '/showcase/realtime-rendering.png',
+    image: assetUrl('showcase/realtime-rendering.png'),
     icon: 'i-lucide-gauge'
   },
   {
     title: 'outlineTitle',
     text: 'outlineText',
     alt: 'outlineTitle',
-    image: '/showcase/file-heading-tree.png',
+    image: assetUrl('showcase/file-heading-tree.png'),
     icon: 'i-lucide-list-tree'
   }
 ]
