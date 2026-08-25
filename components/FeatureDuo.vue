@@ -39,14 +39,14 @@ const features = [
     title: 'realtimeTitle',
     text: 'realtimeText',
     alt: 'realtimeTitle',
-    image: assetUrl('showcase/realtime-rendering.png'),
+    image: assetUrl('showcase/realtime-rendering.webp'),
     icon: 'i-lucide-gauge'
   },
   {
     title: 'outlineTitle',
     text: 'outlineText',
     alt: 'outlineTitle',
-    image: assetUrl('showcase/file-heading-tree.png'),
+    image: assetUrl('showcase/file-heading-tree.webp'),
     icon: 'i-lucide-list-tree'
   }
 ]
