@@ -156,4 +156,13 @@ onBeforeUnmount(() => {
   .duo-feature__copy p { margin-top: 12px; font-size: 14px; }
   .duo-feature__visual { border-radius: 15px; }
 }
+
+@media (max-width: 900px) and (max-height: 740px) {
+  .duo-feature { gap: 22px; }
+  .duo-feature__item, .duo-feature__item--reverse { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 14px; }
+  .duo-feature__item--reverse .duo-feature__copy { order: 2; }
+  .duo-feature__item--reverse .duo-feature__visual { order: 1; }
+  .duo-feature__title-stage h2 { font-size: clamp(21px, 5.8vw, 29px); }
+  .duo-feature__copy p { font-size: 12px; line-height: 1.55; }
+}
 </style>

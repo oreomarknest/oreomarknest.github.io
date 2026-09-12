@@ -9,7 +9,6 @@
       :mousewheel="mousewheelOptions"
       :keyboard="{ enabled: true }"
       :pagination="{ clickable: true }"
-      :breakpoints="swiperBreakpoints"
       @swiper="onSwiper"
     >
       <SwiperSlide tag="section" class="hero page-shell">
@@ -82,11 +81,6 @@ const mousewheelOptions = {
   thresholdDelta: 18,
   thresholdTime: 450
 }
-const swiperBreakpoints = {
-  0: { enabled: false },
-  901: { enabled: true }
-}
-
 function onSwiper(instance: SwiperInstance) {
   swiper.value = instance
 }
