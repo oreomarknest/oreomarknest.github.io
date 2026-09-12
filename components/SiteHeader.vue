@@ -74,27 +74,32 @@ async function toggleTheme() {
   const y = bounds ? bounds.top + bounds.height / 2 : 28
   const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
   themeTransitioning.value = true
-
-  const transition = transitionDocument.startViewTransition(async () => {
-    colorMode.preference = target
-    await nextTick()
-  })
+  document.documentElement.dataset.themeTransition = target
 
   try {
+    const transition = transitionDocument.startViewTransition(async () => {
+      colorMode.preference = target
+      await nextTick()
+    })
+
     await transition.ready
+    const expandingLight = target === 'light'
     document.documentElement.animate(
       {
-        clipPath: [`circle(${radius}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
+        clipPath: expandingLight
+          ? [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`]
+          : [`circle(${radius}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
       },
       {
         duration: 430,
         easing: 'cubic-bezier(.4, 0, .2, 1)',
         fill: 'both',
-        pseudoElement: '::view-transition-old(root)'
+        pseudoElement: expandingLight ? '::view-transition-new(root)' : '::view-transition-old(root)'
       } as KeyframeAnimationOptions
     )
     await transition.finished
   } finally {
+    delete document.documentElement.dataset.themeTransition
     themeTransitioning.value = false
   }
 }

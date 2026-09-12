@@ -272,8 +272,10 @@ button { color: inherit; font: inherit; }
 
 ::view-transition-old(root),
 ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-old(root) { z-index: 2; }
-::view-transition-new(root) { z-index: 1; }
+html[data-theme-transition="dark"]::view-transition-old(root),
+html[data-theme-transition="light"]::view-transition-new(root) { z-index: 2; }
+html[data-theme-transition="dark"]::view-transition-new(root),
+html[data-theme-transition="light"]::view-transition-old(root) { z-index: 1; }
 
 @media (max-width: 900px) {
   .site-frame { overscroll-behavior-x: none; }
