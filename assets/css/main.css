@@ -271,6 +271,7 @@ button { color: inherit; font: inherit; }
 @keyframes cursor-blink { 0%, 48% { opacity: 1; } 49%, 100% { opacity: 0; } }
 
 @media (max-width: 900px) {
+  .site-frame { overscroll-behavior-x: none; }
   .showcase-section { padding: 88px 0 42px; }
   .feature-duo-slide { padding: 82px 0 28px; }
   .header-inner { grid-template-columns: 1fr auto 1fr; }
