@@ -55,20 +55,6 @@ button { color: inherit; font: inherit; }
 .main-nav a.router-link-active { color: var(--ink); }
 .main-nav a.router-link-active::after { content: ""; position: absolute; right: 0; bottom: 5px; left: 0; height: 2px; border-radius: 2px; background: var(--accent); transform-origin: center; animation: nav-line .25s ease-out both; }
 .header-actions { display: flex; justify-self: end; align-items: center; gap: 2px; }
-.theme-transition-overlay {
-  position: fixed; inset: 0; z-index: 1000; border-radius: 50%; pointer-events: none;
-  transform: scale(0); transform-origin: var(--theme-origin-x) var(--theme-origin-y);
-  will-change: transform, opacity;
-  animation: theme-wipe-grow .82s cubic-bezier(.16, 1, .3, 1) both, theme-wipe-fade .22s ease .7s both;
-}
-.theme-transition-overlay--dark {
-  background:
-    radial-gradient(circle at var(--theme-origin-x) var(--theme-origin-y), rgba(184, 173, 255, .98) 0, rgba(104, 87, 229, .96) 14%, rgba(32, 28, 58, .98) 42%, #09090b 76%);
-}
-.theme-transition-overlay--light {
-  background:
-    radial-gradient(circle at var(--theme-origin-x) var(--theme-origin-y), #fff 0, rgba(220, 214, 255, .98) 17%, rgba(244, 242, 252, .99) 46%, #f8f8fb 78%);
-}
 .language-menu { position: relative; }
 .language-popover {
   position: absolute; top: 48px; right: 0; display: grid; width: 176px; padding: 7px; border: 1px solid var(--line); border-radius: 16px;
@@ -283,8 +269,11 @@ button { color: inherit; font: inherit; }
 @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 @keyframes nav-line { from { opacity: 0; transform: scaleX(.35); } to { opacity: 1; transform: scaleX(1); } }
 @keyframes cursor-blink { 0%, 48% { opacity: 1; } 49%, 100% { opacity: 0; } }
-@keyframes theme-wipe-grow { to { transform: scale(3.2); } }
-@keyframes theme-wipe-fade { from { opacity: 1; } to { opacity: 0; } }
+
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 2; }
+::view-transition-new(root) { z-index: 1; }
 
 @media (max-width: 900px) {
   .site-frame { overscroll-behavior-x: none; }
@@ -381,6 +370,5 @@ button { color: inherit; font: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .theme-transition-overlay { display: none; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

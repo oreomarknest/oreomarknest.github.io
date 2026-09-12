@@ -22,7 +22,7 @@
             </button>
           </div>
         </div>
-        <button ref="themeButton" class="icon-button" type="button" :title="t('theme')" :aria-label="t('theme')" :disabled="themeTransition.active" @click="toggleTheme">
+        <button ref="themeButton" class="icon-button" type="button" :title="t('theme')" :aria-label="t('theme')" :disabled="themeTransitioning" @click="toggleTheme">
           <ClientOnly>
             <span v-if="colorMode.value === 'dark'" class="i-lucide-moon-star text-[19px]" />
             <span v-else class="i-lucide-sun text-[19px]" />
@@ -32,16 +32,6 @@
       </div>
     </div>
   </header>
-
-  <Teleport to="body">
-    <div
-      v-if="themeTransition.active"
-      class="theme-transition-overlay"
-      :class="`theme-transition-overlay--${themeTransition.target}`"
-      :style="{ '--theme-origin-x': `${themeTransition.x}px`, '--theme-origin-y': `${themeTransition.y}px` }"
-      aria-hidden="true"
-    />
-  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -52,14 +42,7 @@ const colorMode = useColorMode()
 const languageMenu = ref<HTMLElement | null>(null)
 const themeButton = ref<HTMLButtonElement | null>(null)
 const languageOpen = ref(false)
-const themeTransition = reactive({
-  active: false,
-  target: 'dark' as 'light' | 'dark',
-  x: 0,
-  y: 0
-})
-let themeSwapTimer: ReturnType<typeof setTimeout> | undefined
-let themeFinishTimer: ReturnType<typeof setTimeout> | undefined
+const themeTransitioning = ref(false)
 const localeOptions: { value: Locale, label: string, short: string }[] = [
   { value: 'zh', label: '简体中文', short: '中' },
   { value: 'en', label: 'English', short: 'EN' },
@@ -71,27 +54,49 @@ function setLocale(value: Locale) {
   languageOpen.value = false
 }
 
-function toggleTheme() {
-  if (themeTransition.active) return
-
+async function toggleTheme() {
+  if (themeTransitioning.value) return
   const target = colorMode.value === 'dark' ? 'light' : 'dark'
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const transitionDocument = document as Document & {
+    startViewTransition?: (callback: () => Promise<void>) => {
+      ready: Promise<void>
+      finished: Promise<void>
+    }
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !transitionDocument.startViewTransition) {
     colorMode.preference = target
     return
   }
 
   const bounds = themeButton.value?.getBoundingClientRect()
-  themeTransition.target = target
-  themeTransition.x = bounds ? bounds.left + bounds.width / 2 : window.innerWidth - 28
-  themeTransition.y = bounds ? bounds.top + bounds.height / 2 : 28
-  themeTransition.active = true
+  const x = bounds ? bounds.left + bounds.width / 2 : window.innerWidth - 28
+  const y = bounds ? bounds.top + bounds.height / 2 : 28
+  const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+  themeTransitioning.value = true
 
-  themeSwapTimer = setTimeout(() => {
+  const transition = transitionDocument.startViewTransition(async () => {
     colorMode.preference = target
-  }, 300)
-  themeFinishTimer = setTimeout(() => {
-    themeTransition.active = false
-  }, 920)
+    await nextTick()
+  })
+
+  try {
+    await transition.ready
+    document.documentElement.animate(
+      {
+        clipPath: [`circle(${radius}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
+      },
+      {
+        duration: 430,
+        easing: 'cubic-bezier(.4, 0, .2, 1)',
+        fill: 'both',
+        pseudoElement: '::view-transition-old(root)'
+      } as KeyframeAnimationOptions
+    )
+    await transition.finished
+  } finally {
+    themeTransitioning.value = false
+  }
 }
 
 function closeLanguageMenu(event: PointerEvent) {
@@ -109,8 +114,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  clearTimeout(themeSwapTimer)
-  clearTimeout(themeFinishTimer)
   document.removeEventListener('pointerdown', closeLanguageMenu)
   document.removeEventListener('keydown', closeLanguageMenuOnEscape)
 })
