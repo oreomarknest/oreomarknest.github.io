@@ -22,7 +22,7 @@
             </button>
           </div>
         </div>
-        <button ref="themeButton" class="icon-button" type="button" :title="t('theme')" :aria-label="t('theme')" :disabled="themeTransitioning" @click="toggleTheme">
+        <button class="icon-button" type="button" :title="t('theme')" :aria-label="t('theme')" @click="toggleTheme">
           <ClientOnly>
             <span v-if="colorMode.value === 'dark'" class="i-lucide-moon-star text-[19px]" />
             <span v-else class="i-lucide-sun text-[19px]" />
@@ -40,9 +40,7 @@ import type { Locale } from '~/composables/useLocale'
 const { locale, t } = useLocale()
 const colorMode = useColorMode()
 const languageMenu = ref<HTMLElement | null>(null)
-const themeButton = ref<HTMLButtonElement | null>(null)
 const languageOpen = ref(false)
-const themeTransitioning = ref(false)
 const localeOptions: { value: Locale, label: string, short: string }[] = [
   { value: 'zh', label: '简体中文', short: '中' },
   { value: 'en', label: 'English', short: 'EN' },
@@ -54,54 +52,8 @@ function setLocale(value: Locale) {
   languageOpen.value = false
 }
 
-async function toggleTheme() {
-  if (themeTransitioning.value) return
-  const target = colorMode.value === 'dark' ? 'light' : 'dark'
-  const transitionDocument = document as Document & {
-    startViewTransition?: (callback: () => Promise<void>) => {
-      ready: Promise<void>
-      finished: Promise<void>
-    }
-  }
-
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !transitionDocument.startViewTransition) {
-    colorMode.preference = target
-    return
-  }
-
-  const bounds = themeButton.value?.getBoundingClientRect()
-  const x = bounds ? bounds.left + bounds.width / 2 : window.innerWidth - 28
-  const y = bounds ? bounds.top + bounds.height / 2 : 28
-  const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
-  themeTransitioning.value = true
-  document.documentElement.dataset.themeTransition = target
-
-  try {
-    const transition = transitionDocument.startViewTransition(async () => {
-      colorMode.preference = target
-      await nextTick()
-    })
-
-    await transition.ready
-    const expandingLight = target === 'light'
-    document.documentElement.animate(
-      {
-        clipPath: expandingLight
-          ? [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`]
-          : [`circle(${radius}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
-      },
-      {
-        duration: 430,
-        easing: 'cubic-bezier(.4, 0, .2, 1)',
-        fill: 'both',
-        pseudoElement: expandingLight ? '::view-transition-new(root)' : '::view-transition-old(root)'
-      } as KeyframeAnimationOptions
-    )
-    await transition.finished
-  } finally {
-    delete document.documentElement.dataset.themeTransition
-    themeTransitioning.value = false
-  }
+function toggleTheme() {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 
 function closeLanguageMenu(event: PointerEvent) {
