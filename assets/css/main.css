@@ -37,7 +37,7 @@ a { color: inherit; text-decoration: none; }
 button { color: inherit; font: inherit; }
 ::selection { color: #fff; background: var(--accent); }
 
-.site-frame { min-height: 100vh; overflow: hidden; }
+.site-frame { min-height: 100vh; overflow-x: clip; }
 .site-header {
   position: fixed; inset: 0 0 auto; z-index: 100; height: 74px; border-bottom: 1px solid transparent;
   background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(24px) saturate(1.4);
@@ -272,7 +272,10 @@ button { color: inherit; font: inherit; }
 
 @media (max-width: 900px) {
   .home-page, .home-swiper { height: auto; }
-  .home-swiper { overflow: visible; }
+  /* Swiper marks vertical carousels as `touch-action: pan-x`. Once the
+     carousel is disabled at this breakpoint that would still block the
+     browser's native vertical touch scrolling, so restore normal page pan. */
+  .swiper.home-swiper { overflow: visible; touch-action: pan-y; }
   .home-swiper .swiper-wrapper { display: block; transform: none !important; }
   .home-swiper > .swiper-wrapper > .swiper-slide { height: auto !important; overflow: visible; }
   .home-swiper .hero-content,

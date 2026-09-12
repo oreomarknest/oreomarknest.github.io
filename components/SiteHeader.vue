@@ -43,8 +43,8 @@ const languageMenu = ref<HTMLElement | null>(null)
 const languageOpen = ref(false)
 const localeOptions: { value: Locale, label: string, short: string }[] = [
   { value: 'zh', label: '简体中文', short: '中' },
-  { value: 'ja', label: '日本語', short: '日' },
-  { value: 'en', label: 'English', short: 'EN' }
+  { value: 'en', label: 'English', short: 'EN' },
+  { value: 'ja', label: '日本語', short: '日' }
 ]
 
 function setLocale(value: Locale) {
